@@ -59,6 +59,47 @@
   .page.active{display:block;}
 
   /* ---------- Home hero ---------- */
+  /* ---------- Welcome Hero Banner ---------- */
+.welcome-hero {
+  position: relative;
+  width: 100%;
+  height: 55vh;
+  min-height: 400px;
+  background-image: url('bookshelf.jpg');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.welcome-overlay {
+  background: rgba(17, 24, 39, 0.6); 
+  backdrop-filter: blur(5px); 
+  padding: 40px 60px;
+  border-radius: 20px;
+  color: #ffffff;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  animation: fadeIn 1.2s ease-out;
+}
+.welcome-overlay h1 {
+  font-size: clamp(3rem, 8vw, 5rem);
+  margin: 0 0 10px 0;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  font-weight: 900;
+}
+.welcome-overlay p {
+  font-size: clamp(1rem, 2vw, 1.3rem);
+  margin: 0;
+  opacity: 0.9;
+  letter-spacing: 1px;
+  font-weight: 400;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
   .hero{max-width:1150px;margin:0 auto;padding:44px 20px 16px;text-align:center;}
   .hero h1{font-size:clamp(26px,4vw,40px);margin:0 0 10px;letter-spacing:-.5px;}
   .hero p{color:var(--muted);margin:0 0 24px;font-size:16px;}
@@ -188,6 +229,7 @@
 <main>
   <!-- ================= HOME PAGE ================= -->
   <section id="page-home" class="page active">
+}
     <div class="hero">
       <h1>Read free books online</h1>
       <p>Every book on Ibook is free to read. No sign-up. No payment.</p>
