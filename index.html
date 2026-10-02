@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#4f46e5" />
+<title>Ibook — Iyakare Books</title>
+<style>
+  :root{
+    --brand:#4f46e5;
+    --brand-dark:#3730a3;
+    --brand-2:#7c3aed;
+    --bg:#f6f7fb;
+    --card:#ffffff;
+    --text:#111827;
+    --muted:#6b7280;
+    --border:#e5e7eb;
+    --radius:14px;
+    --shadow:0 4px 14px rgba(17,24,39,.08);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--text);min-height:100vh;
+  }
+  .hidden{display:none !important;}
+
+  /* ---------- Header ---------- */
+  .site-header{
+    position:sticky;top:0;z-index:50;
+    background:rgba(255,255,255,.92);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--border);
+  }
+  .header-inner{
+    max-width:1150px;margin:0 auto;padding:12px 20px;
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+  }
+  .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit;}
+  .logo-mark{
+    width:38px;height:38px;border-radius:11px;
+    background:linear-gradient(135deg,var(--brand),var(--brand-2));
+    color:#fff;display:grid;place-items:center;font-weight:800;font-size:20px;
+  }
+  .logo strong{display:block;font-size:18px;line-height:1.1;}
+  .logo small{color:var(--muted);font-size:11.5px;letter-spacing:.4px;text-transform:uppercase;}
+  .nav{display:flex;gap:8px;}
+  .nav-btn{
+    border:1px solid transparent;background:transparent;color:var(--muted);
+    padding:8px 16px;border-radius:999px;font-size:14px;font-weight:600;
+    cursor:pointer;font-family:inherit;transition:.15s;
+  }
+  .nav-btn:hover{background:#eef0f7;color:var(--text);}
+  .nav-btn.active{background:var(--brand);color:#fff;}
+
+  /* ---------- Pages ---------- */
+  .page{display:none;}
+  .page.active{display:block;}
+
+  /* ---------- Home hero ---------- */
+  .hero{max-width:1150px;margin:0 auto;padding:44px 20px 16px;text-align:center;}
+  .hero h1{font-size:clamp(26px,4vw,40px);margin:0 0 10px;letter-spacing:-.5px;}
+  .hero p{color:var(--muted);margin:0 0 24px;font-size:16px;}
+  .search-box{
+    max-width:560px;margin:0 auto;display:flex;align-items:center;gap:10px;
+    background:#fff;border:1px solid var(--border);border-radius:999px;
+    padding:11px 18px;box-shadow:var(--shadow);
+  }
+  .search-box svg{width:18px;height:18px;stroke:var(--muted);flex:none;}
+  .search-box input{
+    flex:1;border:none;outline:none;font-size:15px;background:transparent;
+    color:var(--text);font-family:inherit;
+  }
+
+  /* ---------- Book grid ---------- */
+  .book-grid{
+    max-width:1150px;margin:0 auto;padding:28px 20px 80px;
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:24px;
+  }
+  .book-card{
+    background:var(--card);border-radius:var(--radius);overflow:hidden;
+    box-shadow:var(--shadow);display:flex;flex-direction:column;
+    transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .book-card:hover{transform:translateY(-4px);box-shadow:0 14px 28px rgba(17,24,39,.14);}
+  .cover{position:relative;aspect-ratio:2/3;background:#e9eaf2;cursor:pointer;overflow:hidden;}
+  .cover img{width:100%;height:100%;object-fit:cover;display:block;}
+  .cover.no-cover{
+    display:grid;place-items:center;text-align:center;padding:14px;
+    background:linear-gradient(135deg,var(--brand),var(--brand-2));
+    color:#fff;font-weight:700;font-size:15px;line-height:1.35;
+  }
+  .book-info{padding:12px 14px 14px;display:flex;flex-direction:column;gap:4px;flex:1;}
+  .book-info h3{margin:0;font-size:15px;line-height:1.3;}
+  .book-info p{margin:0;color:var(--muted);font-size:12.5px;}
+  .btn-read{
+    margin-top:10px;border:none;background:var(--brand);color:#fff;padding:9px;
+    border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;
+    font-family:inherit;transition:.15s;
+  }
+  .btn-read:hover{background:var(--brand-dark);}
+  .empty{
+    grid-column:1/-1;text-align:center;color:var(--muted);
+    padding:70px 20px;font-size:15px;line-height:1.6;
+  }
+
+  /* ---------- Admin ---------- */
+  .admin-wrap{max-width:800px;margin:0 auto;padding:34px 20px 90px;}
+  .admin-wrap h2{font-size:19px;margin:0 0 14px;}
+  .card-panel{
+    background:#fff;border:1px solid var(--border);border-radius:var(--radius);
+    padding:22px;box-shadow:var(--shadow);margin-bottom:30px;
+  }
+  .field{margin-bottom:16px;}
+  .field label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;}
+  .field input[type=text],
+  .field input[type=password],
+  .field textarea{
+    width:100%;padding:11px 13px;border:1px solid var(--border);border-radius:10px;
+    font-size:14.5px;font-family:inherit;outline:none;background:#fbfbfe;
+    color:var(--text);transition:.15s;
+  }
+  .field input:focus,.field textarea:focus{border-color:var(--brand);background:#fff;}
+  .field input[type=file]{width:100%;font-size:13.5px;font-family:inherit;}
+  .hint{font-size:12px;color:var(--muted);margin:6px 0 0;}
+  .cover-preview{
+    width:110px;aspect-ratio:2/3;border-radius:8px;object-fit:cover;
+    border:1px solid var(--border);margin-top:10px;display:none;
+  }
+  .btn-primary{
+    background:var(--brand);color:#fff;border:none;padding:12px 22px;
+    border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;
+    font-family:inherit;transition:.15s;
+  }
+  .btn-primary:hover{background:var(--brand-dark);}
+  .btn-primary:disabled{opacity:.6;cursor:not-allowed;}
+
+  .admin-item{
+    display:flex;align-items:center;gap:14px;padding:12px;
+    border:1px solid var(--border);border-radius:12px;margin-bottom:10px;background:#fff;
+  }
+  .admin-item img,.admin-item .mini-cover{
+    width:44px;height:62px;object-fit:cover;border-radius:6px;flex:none;
+    background:linear-gradient(135deg,var(--brand),var(--brand-2));
+  }
+  .admin-item .meta{flex:1;min-width:0;}
+  .admin-item .meta strong{display:block;font-size:14.5px;}
+  .admin-item .meta span{font-size:12.5px;color:var(--muted);}
+  .btn-danger{
+    background:#fee2e2;color:#b91c1c;border:none;padding:8px 14px;
+    border-radius:8px;font-weight:600;cursor:pointer;font-size:13px;font-family:inherit;
+  }
+  .btn-danger:hover{background:#fecaca;}
+
+  /* ---------- Lock screen ---------- */
+  .lock{
+    max-width:380px;margin:70px auto;background:#fff;border:1px solid var(--border);
+    border-radius:var(--radius);padding:28px;text-align:center;box-shadow:var(--shadow);
+  }
+  .lock h2{margin:0 0 6px;}
+  .error{color:#dc2626;font-size:13px;min-height:18px;margin:8px 0;}
+
+  /* ---------- Reader ---------- */
+  .reader-modal{position:fixed;inset:0;background:#111827;display:none;flex-direction:column;z-index:100;}
+  .reader-modal.open{display:flex;}
+  .reader-bar{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:10px 16px;background:#1f2937;color:#fff;font-size:14.5px;font-weight:600;
+  }
+  .reader-bar .r-title{
+    flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .reader-bar a,.reader-bar button{
+    background:rgba(255,255,255,.12);color:#fff;border:none;padding:8px 14px;
+    border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;
+    text-decoration:none;margin-left:8px;font-family:inherit;white-space:nowrap;
+  }
+  .reader-bar a:hover,.reader-bar button:hover{background:rgba(255,255,255,.24);}
+  #readerFrame{flex:1;width:100%;border:none;background:#525659;}
+
+  /* ---------- Toast ---------- */
+  #toast{
+    position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);
+    background:#111827;color:#fff;padding:12px 22px;border-radius:999px;
+    font-size:14px;opacity:0;pointer-events:none;transition:.3s;z-index:200;
+  }
+  #toast.show{opacity:1;transform:translate(-50%,0);}
+
+  @media (max-width:520px){
+    .book-grid{grid-template-columns:repeat(auto-fill,minmax(135px,1fr));gap:16px;padding:20px 14px 70px;}
+    .hero{padding:30px 14px 10px;}
+    .nav-btn{padding:8px 12px;font-size:13px;}
+    .header-inner{padding:10px 14px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= HEADER ================= -->
+<header class="site-header">
+  <div class="header-inner">
+    <a class="logo" href="#" onclick="showPage('home');return false;">
+      <span class="logo-mark">I</span>
+      <span>
+        <strong>Ibook</strong>
+        <small>Iyakare Books</small>
+      </span>
+    </a>
+    <nav class="nav">
+      <button id="navHome" class="nav-btn active" onclick="showPage('home')">Home</button>
+      <button id="navAdmin" class="nav-btn" onclick="showPage('admin')">Settings</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- ================= HOME PAGE ================= -->
+  <section id="page-home" class="page active">
+    <div class="hero">
+      <h1>Read free books online</h1>
+      <p>Every book on Ibook is free to read. No sign-up. No payment.</p>
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round">
+          <circle cx="11" cy="11" r="7"></circle>
+          <line x1="16.5" y1="16.5" x2="21" y2="21"></line>
+        </svg>
+        <input id="searchInput" type="search" placeholder="Search by book title or author…" />
+      </div>
+    </div>
+    <div id="bookGrid" class="book-grid"></div>
+  </section>
+
+  <!-- ================= ADMIN / SETTINGS PAGE ================= -->
+  <section id="page-admin" class="page">
+    <div class="admin-wrap">
+
+      <!-- Lock screen -->
+      <div id="lockScreen" class="lock">
+        <h2>Settings</h2>
+        <p class="hint">Enter your admin PIN to manage books.</p>
+        <div class="field" style="margin-top:18px;">
+          <input id="pinInput" type="password" placeholder="PIN" onkeydown="if(event.key==='Enter')unlockAdmin()" />
+        </div>
+        <p id="pinError" class="error"></p>
+        <button class="btn-primary" onclick="unlockAdmin()">Unlock</button>
+      </div>
+
+      <!-- Admin content -->
+      <div id="adminContent" class="hidden">
+        <h2>Add a new book</h2>
+        <div class="card-panel">
+          <form id="uploadForm">
+            <div class="field">
+              <label for="titleInput">Book title *</label>
+              <input id="titleInput" type="text" placeholder="e.g. The Lion and the Jewel" required />
+            </div>
+            <div class="field">
+              <label for="authorInput">Author</label>
+              <input id="authorInput" type="text" placeholder="e.g. Wole Soyinka" />
+            </div>
+            <div class="field">
+              <label for="descInput">Description (optional)</label>
+              <textarea id="descInput" rows="3" placeholder="Short summary of the book…"></textarea>
+            </div>
+            <div class="field">
+              <label for="coverInput">Cover image (JPG / PNG)</label>
+              <input id="coverInput" type="file" accept="image/*" />
+              <img id="coverPreview" class="cover-preview" alt="Cover preview" />
+            </div>
+            <div class="field">
+              <label for="pdfInput">Book file (PDF) *</label>
+              <input id="pdfInput" type="file" accept="application/pdf" required />
+              <p class="hint">The whole book will be readable online, free for everyone.</p>
+            </div>
+            <button id="submitBtn" class="btn-primary" type="submit">Upload book</button>
+          </form>
+        </div>
+
+        <h2>My books</h2>
+        <div id="adminList"></div>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<!-- ================= READER ================= -->
+<div id="readerModal" class="reader-modal">
+  <div class="reader-bar">
+    <span id="readerTitle" class="r-title">Book</span>
+    <span>
+      <a id="readerDownload" href="#" download>Download</a>
+      <button onclick="closeReader()">Close ✕</button>
+    </span>
+  </div>
+  <iframe id="readerFrame" title="Book reader"></iframe>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* =========================================================
+   Ibook — Iyakare Books
+   Local database using IndexedDB (stores PDFs + covers)
+   ========================================================= */
+
+/* ---------- Config ---------- */
+const ADMIN_PIN = '1234';          // <-- change your PIN here
+const DB_NAME   = 'ibook-db';
+const STORE     = 'books';
+
+/* ---------- IndexedDB helpers ---------- */
+let db = null;
+
+function openDB(){
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, 1);
+    req.onupgradeneeded = e => {
+      const d = e.target.result;
+      if (!d.objectStoreNames.contains(STORE)) {
+        d.createObjectStore(STORE, { keyPath: 'id', autoIncrement: true });
+      }
+    };
+    req.onsuccess = e => { db = e.target.result; resolve(db); };
+    req.onerror   = e => reject(e.target.error);
+  });
+}
+
+function store(mode){ return db.transaction(STORE, mode).objectStore(STORE); }
+
+function dbAdd(book){
+  return new Promise((res, rej) => {
+    const r = store('readwrite').add(book);
+    r.onsuccess = () => res(r.result);
+    r.onerror   = () => rej(r.error);
+  });
+}
+function dbAll(){
+  return new Promise((res, rej) => {
+    const r = store('readonly').getAll();
+    r.onsuccess = () => res(r.result || []);
+    r.onerror   = () => rej(r.error);
+  });
+}
+function dbGet(id){
+  return new Promise((res, rej) => {
+    const r = store('readonly').get(id);
+    r.onsuccess = () => res(r.result);
+    r.onerror   = () => rej(r.error);
+  });
+}
+function dbDelete(id){
+  return new Promise((res, rej) => {
+    const r = store('readwrite').delete(id);
+    r.onsuccess = () => res();
+    r.onerror   = () => rej(r.error);
+  });
+}
+
+/* ---------- Page navigation ---------- */
+function showPage(name){
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  document.getElementById('navHome').classList.toggle('active', name === 'home');
+  document.getElementById('navAdmin').classList.toggle('active', name === 'admin');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (name === 'admin') renderAdminList();
+}
+
+/* ---------- Toast ---------- */
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+/* =========================================================
+   HOME — render book grid
+   ========================================================= */
+const coverUrls = new Map();
+
+async function renderBooks(filter = ''){
+  const grid = document.getElementById('bookGrid');
+
+  coverUrls.forEach(u => URL.revokeObjectURL(u));
+  coverUrls.clear();
+  grid.innerHTML = '';
+
+  let books = await dbAll();
+  books.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+  const q = filter.trim().toLowerCase();
+  if (q) {
+    books = books.filter(b =>
+      (b.title  || '').toLowerCase().includes(q) ||
+      (b.author || '').toLowerCase().includes(q)
+    );
+  }
+
+  if (!books.length) {
+    const p = document.createElement('p');
+    p.className = 'empty';
+    p.textContent = q
+      ? `No books found for “${filter}”.`
+      : 'No books yet. Go to Settings and upload your first book 📚';
+    grid.appendChild(p);
+    return;
+  }
+
+  books.forEach(b => grid.appendChild(buildCard(b)));
+}
+
+function buildCard(b){
+  const card = document.createElement('article');
+  card.className = 'book-card';
+
+  /* --- cover --- */
+  const cover = document.createElement('div');
+  cover.className = 'cover';
+
+  if (b.cover) {
+    const url = URL.createObjectURL(b.cover);
+    coverUrls.set(b.id, url);
+    const img = document.createElement('img');
+    img.src = url;
+    img.alt = b.title || 'Book cover';
+    img.loading = 'lazy';
+    cover.appendChild(img);
+  } else {
+    cover.classList.add('no-cover');
+    cover.textContent = b.title || 'Untitled';
+  }
+  cover.addEventListener('click', () => openReader(b.id));
+
+  /* --- info --- */
+  const info = document.createElement('div');
+  info.className = 'book-info';
+
+  const h3 = document.createElement('h3');
+  h3.textContent = b.title || 'Untitled';
+
+  const p = document.createElement('p');
+  p.textContent = b.author ? 'by ' + b.author : 'Unknown author';
+
+  const btn = document.createElement('button');
+  btn.className = 'btn-read';
+  btn.textContent = 'Read now';
+  btn.addEventListener('click', () => openReader(b.id));
+
+  info.append(h3, p, btn);
+  card.append(cover, info);
+  return card;
+}
+
+/* ---------- Search ---------- */
+document.getElementById('searchInput').addEventListener('input', e => {
+  renderBooks(e.target.value);
+});
+
+/* =========================================================
+   READER
+   ========================================================= */
+let currentPdfUrl = null;
+
+async function openReader(id){
+  const b = await dbGet(id);
+  if (!b || !b.pdf) { alert('This book file is missing.'); return; }
+
+  if (currentPdfUrl) URL.revokeObjectURL(currentPdfUrl);
+  currentPdfUrl = URL.createObjectURL(b.pdf);
+
+  document.getElementById('readerTitle').textContent = b.title || 'Book';
+  document.getElementById('readerFrame').src = currentPdfUrl;
+
+  const dl = document.getElementById('readerDownload');
+  dl.href = currentPdfUrl;
+  dl.download = (b.title || 'book') + '.pdf';
+
+  document.getElementById('readerModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeReader(){
+  document.getElementById('readerModal').classList.remove('open');
+  document.getElementById('readerFrame').src = 'about:blank';
+  document.body.style.overflow = '';
+  if (currentPdfUrl) { URL.revokeObjectURL(currentPdfUrl); currentPdfUrl = null; }
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeReader();
+});
+
+/* =========================================================
+   ADMIN — lock / unlock
+   ========================================================= */
+function checkUnlock(){
+  const unlocked = sessionStorage.getItem('ibook-unlocked') === '1';
+  document.getElementById('lockScreen').classList.toggle('hidden', unlocked);
+  document.getElementById('adminContent').classList.toggle('hidden', !unlocked);
+}
+
+function unlockAdmin(){
+  const val = document.getElementById('pinInput').value;
+  if (val === ADMIN_PIN) {
+    sessionStorage.setItem('ibook-unlocked', '1');
+    document.getElementById('pinError').textContent = '';
+    document.getElementById('pinInput').value = '';
+    checkUnlock();
+    renderAdminList();
+  } else {
+    document.getElementById('pinError').textContent = 'Wrong PIN. Try again.';
+  }
+}
+
+/* =========================================================
+   ADMIN — cover preview
+   ========================================================= */
+document.getElementById('coverInput').addEventListener('change', e => {
+  const f = e.target.files[0];
+  const prev = document.getElementById('coverPreview');
+  if (f) {
+    prev.src = URL.createObjectURL(f);
+    prev.style.display = 'block';
+  } else {
+    prev.style.display = 'none';
+  }
+});
+
+/* =========================================================
+   ADMIN — upload form
+   ========================================================= */
+document.getElementById('uploadForm').addEventListener('submit', async e => {
+  e.preventDefault();
+
+  const title     = document.getElementById('titleInput').value.trim();
+  const author    = document.getElementById('authorInput').value.trim();
+  const desc      = document.getElementById('descInput').value.trim();
+  const coverFile = document.getElementById('coverInput').files[0] || null;
+  const pdfFile   = document.getElementById('pdfInput').files[0];
+  const btn       = document.getElementById('submitBtn');
+
+  if (!title)   { alert('Please enter the book title.'); return; }
+  if (!pdfFile) { alert('Please choose the book PDF file.'); return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Uploading…';
+
+  try {
+    await dbAdd({
+      title,
+      author,
+      description: desc,
+      cover: coverFile,       // Blob or null
+      pdf: pdfFile,           // Blob (File)
+      createdAt: Date.now()
+    });
+
+    e.target.reset();
+    document.getElementById('coverPreview').style.display = 'none';
+
+    await renderBooks(document.getElementById('searchInput').value);
+    await renderAdminList();
+
+    showToast('Book uploaded successfully 🎉');
+  } catch (err) {
+    console.error(err);
+    alert('Upload failed: ' + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Upload book';
+  }
+});
+
+/* =========================================================
+   ADMIN — list of uploaded books
+   ========================================================= */
+async function renderAdminList(){
+  const wrap = document.getElementById('adminList');
+  if (!wrap) return;
+
+  const books = await dbAll();
+  books.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+  wrap.innerHTML = '';
+
+  if (!books.length) {
+    const p = document.createElement('p');
+    p.className = 'hint';
+    p.textContent = 'You have not uploaded any books yet.';
+    wrap.appendChild(p);
+    return;
+  }
+
+  books.forEach(b => {
+    const item = document.createElement('div');
+    item.className = 'admin-item';
+
+    if (b.cover) {
+      const img = document.createElement('img');
+      const url = URL.createObjectURL(b.cover);
+      img.src = url;
+      img.alt = b.title || '';
+      img.onload = () => URL.revokeObjectURL(url);
+      item.appendChild(img);
+    } else {
+      const d = document.createElement('div');
+      d.className = 'mini-cover';
+      item.appendChild(d);
+    }
+
+    const meta = document.createElement('div');
+    meta.className = 'meta';
+    const strong = document.createElement('strong');
+    strong.textContent = b.title || 'Untitled';
+    const span = document.createElement('span');
+    span.textContent = (b.author ? 'by ' + b.author + ' · ' : '') +
+                       new Date(b.createdAt || Date.now()).toLocaleDateString();
+    meta.append(strong, span);
+
+    const del = document.createElement('button');
+    del.className = 'btn-danger';
+    del.textContent = 'Delete';
+    del.addEventListener('click', async () => {
+      if (!confirm(`Delete “${b.title}”? This cannot be undone.`)) return;
+      await dbDelete(b.id);
+      await renderBooks(document.getElementById('searchInput').value);
+      await renderAdminList();
+      showToast('Book deleted');
+    });
+
+    item.append(meta, del);
+    wrap.appendChild(item);
+  });
+}
+
+/* =========================================================
+   INIT
+   ========================================================= */
+(async function init(){
+  try {
+    await openDB();
+  } catch (err) {
+    console.error(err);
+    alert('Could not open the local database. Please use a modern browser.');
+    return;
+  }
+  await renderBooks();
+  checkUnlock();
+  renderAdminList();
+})();
+</script>
+</body>
+  </html>
