@@ -1,16 +1,9 @@
 [
   {
-    "title": "The Lion and the Jewel",
-    "author": "Wole Soyinka",
-    "description": "A play about tradition and change in a Yoruba village.",
-    "cover": "covers/lion.jpg",
-    "pdf": "books/lion.pdf"
-  },
-  {
-    "title": "Things Fall Apart",
-    "author": "Chinua Achebe",
-    "description": "A classic African novel about the arrival of colonialism.",
-    "cover": "covers/things.jpg",
-    "pdf": "books/things.pdf"
+    "title": "Where I Am Not Supposed to Be",
+    "author": "Dequinte",
+    "description": "A literary adaptation of a true school-year memory.",
+    "cover": "covers/where_i_am_not_supposed_to_be.jpg",
+    "pdf": "books/where_i_am_not_supposed_to_be.pdf"
   }
 ]
