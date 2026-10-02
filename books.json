@@ -1,0 +1,16 @@
+[
+  {
+    "title": "The Lion and the Jewel",
+    "author": "Wole Soyinka",
+    "description": "A play about tradition and change in a Yoruba village.",
+    "cover": "covers/lion.jpg",
+    "pdf": "books/lion.pdf"
+  },
+  {
+    "title": "Things Fall Apart",
+    "author": "Chinua Achebe",
+    "description": "A classic African novel about the arrival of colonialism.",
+    "cover": "covers/things.jpg",
+    "pdf": "books/things.pdf"
+  }
+]
