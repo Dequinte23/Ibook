@@ -55,7 +55,7 @@
   .btn-read{margin-top:10px;border:none;background:var(--brand);color:#fff;padding:9px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;}
   .btn-read:hover{background:var(--brand-dark);}
   
-  /* Action Buttons (Like, Share, Save, Views) */
+  /* Action Buttons */
   .book-actions {display: flex; justify-content: space-between; align-items: center; padding: 0 14px 14px; gap: 6px; border-top: 1px solid var(--border); padding-top: 10px; margin-top: auto;}
   .action-btn {background: transparent; border: none; cursor: pointer; display: flex; align-items: center; gap: 4px; font-size: 13px; color: var(--muted); font-weight: 600; font-family: inherit; transition: .15s;}
   .action-btn:hover {color: var(--text); transform: scale(1.05);}
@@ -63,11 +63,11 @@
   .action-btn.active-save {color: var(--brand);}
   .action-btn .count {font-size: 11px; opacity: 0.8;}
 
-  /* Floating Like Animation */
+  /* Floating Like */
   .floating-like {position: fixed; font-size: 40px; pointer-events: none; animation: floatUp 0.8s ease-out forwards; z-index: 999;}
   @keyframes floatUp {0% { transform: translateY(0) scale(0.5); opacity: 1; } 100% { transform: translateY(-100px) scale(1.5); opacity: 0; }}
 
-  /* Modals (Settings, Login, Saved) */
+  /* Modals */
   .modal {display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 200; justify-content: center; align-items: center;}
   .modal.open {display: flex;}
   .modal-content {background: #fff; padding: 24px; border-radius: 14px; width: 90%; max-width: 340px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.2); max-height: 80vh; overflow-y: auto;}
@@ -200,16 +200,14 @@
 
 <script>
 /* =========================================================
-   STATE & LOCAL STORAGE HELPERS
+   STATE & LOCAL STORAGE
    ========================================================= */
 let allBooks = [];
 
 function getStats() { return JSON.parse(localStorage.getItem('ibook-stats') || '{}'); }
 function saveStats(stats) { localStorage.setItem('ibook-stats', JSON.stringify(stats)); }
-
 function getSavedBooks() { return JSON.parse(localStorage.getItem('ibook-saved') || '[]'); }
 function setSavedBooks(arr) { localStorage.setItem('ibook-saved', JSON.stringify(arr)); }
-
 function getUser() { return localStorage.getItem('ibook-user'); }
 function setUser(name) { localStorage.setItem('ibook-user', name); }
 function clearUser() { localStorage.removeItem('ibook-user'); }
@@ -223,11 +221,9 @@ function showPage(name){
   document.getElementById('navHome').classList.toggle('active', name === 'home');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-
 function toggleSettings() { document.getElementById('settingsModal').classList.toggle('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
-// Close modals when clicking outside
 document.querySelectorAll('.modal').forEach(modal => {
   modal.addEventListener('click', function(e) { if (e.target === this) this.classList.remove('open'); });
 });
@@ -251,7 +247,6 @@ function showLoginModal() {
   }
   document.getElementById('loginModal').classList.add('open');
 }
-
 function handleLogin() {
   const name = document.getElementById('usernameInput').value.trim();
   if (!name) { alert('Please enter a username.'); return; }
@@ -259,7 +254,6 @@ function handleLogin() {
   closeModal('loginModal');
   renderBooks(document.getElementById('searchInput').value);
 }
-
 function handleLogout() {
   clearUser();
   closeModal('loginModal');
@@ -290,47 +284,39 @@ function renderBooks(filter = ''){
   grid.innerHTML = '';
   const q = filter.trim().toLowerCase();
   let books = allBooks;
-
-  if (q) {
-    books = books.filter(b => (b.title||'').toLowerCase().includes(q) || (b.author||'').toLowerCase().includes(q));
-  }
-
-  if (!books.length) {
-    grid.innerHTML = `<p class="empty">No books found.</p>`;
-    return;
-  }
-
+  if (q) { books = books.filter(b => (b.title||'').toLowerCase().includes(q) || (b.author||'').toLowerCase().includes(q)); }
+  if (!books.length) { grid.innerHTML = `<p class="empty">No books found.</p>`; return; }
   books.forEach(book => grid.appendChild(buildCard(book)));
 }
 
 function buildCard(book){
   const card = document.createElement('article');
   card.className = 'book-card';
-  const bookId = book.title.replace(/\s+/g, '_'); // Create a unique ID from the title
+  const bookId = book.title.replace(/\s+/g, '_'); 
 
-  // --- Cover ---
+  // Cover
   const cover = document.createElement('div');
   cover.className = 'cover';
-  function showPlaceholder(){
-    cover.classList.add('no-cover'); cover.innerHTML = ''; cover.textContent = book.title || 'Untitled';
-  }
+  function showPlaceholder(){ cover.classList.add('no-cover'); cover.innerHTML = ''; cover.textContent = book.title || 'Untitled'; }
   if (book.cover && book.cover.trim()) {
-    const img = document.createElement('img');
-    img.src = book.cover; img.alt = book.title; img.loading = 'lazy'; img.onerror = showPlaceholder;
+    const img = document.createElement('img'); img.src = book.cover; img.alt = book.title; img.loading = 'lazy'; img.onerror = showPlaceholder;
     cover.appendChild(img);
   } else { showPlaceholder(); }
   cover.addEventListener('click', () => openReader(book, bookId));
 
-  // --- Info ---
+  // Info
   const info = document.createElement('div');
   info.className = 'book-info';
   const h3 = document.createElement('h3'); h3.textContent = book.title || 'Untitled';
   const p = document.createElement('p'); p.textContent = book.author ? 'by ' + book.author : 'Unknown author';
-  const btn = document.createElement('button'); btn.className = 'btn-read'; btn.textContent = 'Read now';
+  
+  const btn = document.createElement('button'); 
+  btn.className = 'btn-read'; 
+  btn.textContent = 'Read now';
   btn.addEventListener('click', () => openReader(book, bookId));
   info.append(h3, p, btn);
 
-  // --- Action Buttons (Views, Like, Share, Save) ---
+  // Actions (Views, Like, Share, Save)
   const stats = getStats()[bookId] || { views: 0, likes: 0 };
   const savedBooks = getSavedBooks();
   const isSaved = savedBooks.includes(bookId);
@@ -340,28 +326,20 @@ function buildCard(book){
   const actions = document.createElement('div');
   actions.className = 'book-actions';
 
-  // Views
   const viewsBtn = document.createElement('button');
-  viewsBtn.className = 'action-btn';
-  viewsBtn.innerHTML = `👀 <span class="count">${stats.views}</span>`;
+  viewsBtn.className = 'action-btn'; viewsBtn.innerHTML = `👀 <span class="count">${stats.views}</span>`;
   viewsBtn.onclick = (e) => { e.stopPropagation(); };
 
-  // Like
   const likeBtn = document.createElement('button');
-  likeBtn.className = `action-btn ${isLiked ? 'active-like' : ''}`;
-  likeBtn.innerHTML = `❤️ <span class="count">${stats.likes}</span>`;
+  likeBtn.className = `action-btn ${isLiked ? 'active-like' : ''}`; likeBtn.innerHTML = `❤️ <span class="count">${stats.likes}</span>`;
   likeBtn.onclick = (e) => { e.stopPropagation(); handleLike(bookId, likeBtn); };
 
-  // Share
   const shareBtn = document.createElement('button');
-  shareBtn.className = 'action-btn';
-  shareBtn.innerHTML = `🔗 Share`;
+  shareBtn.className = 'action-btn'; shareBtn.innerHTML = `🔗 Share`;
   shareBtn.onclick = (e) => { e.stopPropagation(); handleShare(book, bookId); };
 
-  // Save
   const saveBtn = document.createElement('button');
-  saveBtn.className = `action-btn ${isSaved ? 'active-save' : ''}`;
-  saveBtn.innerHTML = isSaved ? `🤍 Saved` : `🤍 Save`;
+  saveBtn.className = `action-btn ${isSaved ? 'active-save' : ''}`; saveBtn.innerHTML = isSaved ? `🤍 Saved` : `🤍 Save`;
   saveBtn.onclick = (e) => { e.stopPropagation(); handleSave(bookId, saveBtn); };
 
   actions.append(viewsBtn, likeBtn, shareBtn, saveBtn);
@@ -374,23 +352,19 @@ function buildCard(book){
    ========================================================= */
 function openReader(book, bookId){
   if (!book.pdf) { alert('This book has no PDF file listed.'); return; }
-  
-  // Increment Views
   const stats = getStats();
   if (!stats[bookId]) stats[bookId] = { views: 0, likes: 0 };
   stats[bookId].views += 1;
   saveStats(stats);
-  renderBooks(document.getElementById('searchInput').value); // Refresh UI
+  renderBooks(document.getElementById('searchInput').value); 
 
   document.getElementById('readerTitle').textContent = book.title || 'Book';
   document.getElementById('readerFrame').src = book.pdf;
   const dl = document.getElementById('readerDownload');
-  dl.href = book.pdf;
-  dl.download = (book.title || 'book') + '.pdf';
+  dl.href = book.pdf; dl.download = (book.title || 'book') + '.pdf';
   document.getElementById('readerModal').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
-
 function closeReader(){
   document.getElementById('readerModal').classList.remove('open');
   document.getElementById('readerFrame').src = 'about:blank';
@@ -400,10 +374,8 @@ function closeReader(){
 function handleLike(bookId, btnElement){
   const user = getUser();
   if (!user) { alert('You need an account to like books. Please go to Settings > Account Center to sign up.'); return; }
-
   const stats = getStats();
   if (!stats[bookId]) stats[bookId] = { views: 0, likes: 0 };
-  
   const likeKey = `ibook-liked-${user}-${bookId}`;
   const isLiked = localStorage.getItem(likeKey) === 'true';
 
@@ -424,10 +396,8 @@ function handleLike(bookId, btnElement){
 function showFloatingLike(btnElement) {
   const rect = btnElement.getBoundingClientRect();
   const likeEl = document.createElement('span');
-  likeEl.className = 'floating-like';
-  likeEl.textContent = '👍';
-  likeEl.style.left = `${rect.left}px`;
-  likeEl.style.top = `${rect.top}px`;
+  likeEl.className = 'floating-like'; likeEl.textContent = '👍';
+  likeEl.style.left = `${rect.left}px`; likeEl.style.top = `${rect.top}px`;
   document.body.appendChild(likeEl);
   setTimeout(() => likeEl.remove(), 800);
 }
@@ -438,28 +408,22 @@ function handleShare(book, bookId){
     text: `Read "${book.title}" by ${book.author} for free on Ibook!`,
     url: window.location.href
   };
-  if (navigator.share) {
-    navigator.share(shareData).catch(console.error);
-  } else {
-    navigator.clipboard.writeText(window.location.href).then(() => {
-      alert('Link copied to clipboard! Share it with your friends.');
-    });
+  if (navigator.share) { navigator.share(shareData).catch(console.error); }
+  else {
+    navigator.clipboard.writeText(window.location.href).then(() => { alert('Link copied to clipboard! Share it with your friends.'); });
   }
 }
 
 function handleSave(bookId, btnElement){
   const user = getUser();
   if (!user) { alert('You need an account to save books. Please go to Settings > Account Center to sign up.'); return; }
-
   let saved = getSavedBooks();
   if (saved.includes(bookId)) {
     saved = saved.filter(id => id !== bookId);
-    btnElement.classList.remove('active-save');
-    btnElement.innerHTML = `🤍 Save`;
+    btnElement.classList.remove('active-save'); btnElement.innerHTML = `🤍 Save`;
   } else {
     saved.push(bookId);
-    btnElement.classList.add('active-save');
-    btnElement.innerHTML = `🤍 Saved`;
+    btnElement.classList.add('active-save'); btnElement.innerHTML = `🤍 Saved`;
     alert('Book saved! You can find it in Settings > Saved Books.');
   }
   setSavedBooks(saved);
@@ -473,7 +437,6 @@ function showSavedBooks() {
   const saved = getSavedBooks();
   const list = document.getElementById('savedBooksList');
   list.innerHTML = '';
-
   if (saved.length === 0) {
     list.innerHTML = '<p style="color:#6b7280; font-size:14px;">You haven\'t saved any books yet.</p>';
   } else {
@@ -501,7 +464,6 @@ function toggleDarkMode() {
   const iconSpan = document.querySelector('#themeToggle .icon');
   if (iconSpan) iconSpan.textContent = isDark ? '☀️' : '🌙';
 }
-
 document.addEventListener('DOMContentLoaded', () => {
   const savedTheme = localStorage.getItem('ibook-theme');
   if (savedTheme === 'dark') {
